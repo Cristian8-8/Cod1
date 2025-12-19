@@ -40,12 +40,9 @@ while True:
     if red_quadrado.colliderect(linha):
         vel_y = 0
         y = linha.top - 40
-    
 
-    
-
-    
-    
-    
-    
     pygame.display.update()
+
+
+
+/////////////////////////////////////////////
