@@ -16,11 +16,13 @@ Taxa_de_frames = pygame.time.Clock()
 while True:
     Taxa_de_frames.tick(60)
     tela.fill((0,0,0))
+
     # Comando para fecha o jogo
     for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
-                exit() 
+                exit()
+
     # movimentação
     if pygame.key.get_pressed()[K_a]:
         x = x - 5
@@ -30,13 +32,15 @@ while True:
         y = y + 5
     if pygame.key.get_pressed()[K_w]:
         y = y - 5
+
     # objetos na tela
     red_quadrado = pygame.draw.rect(tela,(255,0,0),(x,y,40,40))
     linha = pygame.draw.line(tela,(255,255,255),(0,400),(600,400))
     
     # "animação do quadrado"
     y += 1
-        
+
+    # colisao da linha
     if red_quadrado.colliderect(linha):
         vel_y = 0
         y = linha.top - 40
@@ -46,3 +50,14 @@ while True:
 
 
 /////////////////////////////////////////////
+
+# grade do jogo
+coluna = 10
+linhas = 20
+tam_celula = 40
+larg_jogo,alt_jogo = coluna*tam_celula,linha*tam_celula
+
+# janela do jogo
+dist_borda = 40
+larg_janela = larg_jogo + dist_borda*3
+alt_janela = alt_jogo + dist_borda*2
