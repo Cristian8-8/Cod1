@@ -1,0 +1,14 @@
+
+Desenhar objetos
+    Quadrado/Retangulo
+        pygame.draw.rect(tela,(R,G,B),(X,Y,largura,altura))
+        exemplo:
+            pygame.draw.rect(tela,(255,0,0),(40,30,40,40))
+    Circulo
+        pygame.draw.circle(tela,(R,G,B),(X,Y,),raio_do_circulo)
+        exemplo:
+            pygame.draw.circle(tela,(0,250,0),(100,100),25)
+    Linha
+        pygame.draw.line(tela,(R,G,B),(X_Inicial,Y_Inicial),(x_Final,Y_Final),Espessura)
+        exemplo:
+        pygame.draw.line(tela,(255,255,255),(390,0),(390,600),6)
