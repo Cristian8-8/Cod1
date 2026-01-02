@@ -5,8 +5,6 @@ from sys import exit
 
 class Jogo:
     def __init__(self,tam_cel): 
-        # Lista de pedidos ativos (cada pedido é uma lista de códigos de cor)
-        # (adiada para depois de self.inventario)
         pygame.init()
         # calcula largura suficiente para tabuleiro (10 células) + painéis laterais
         largura_total = self.calcula_largura_janela(tam_cel)
