@@ -127,11 +127,10 @@ class Jogo:
         # Agora que inventario existe, pode gerar pedidos
         self.pedidos_ativos = [self.gerar_pedido_aleatorio() for _ in range(1)]
 
-	def calcula_largura_janela(self,tam_cel):
-	       multiplicador_total=22
-	       return tam_cel*multiplicador_total
-	       
-        
+    def calcula_largura_janela(self, tam_cel):
+        multiplicador_total = 22
+        return tam_cel * multiplicador_total
+
     def passar_turno(self):
         self.turno += 1
         if self.turno % 10 == 0: # a cada 5 turnos
@@ -143,16 +142,14 @@ class Jogo:
     
     def ataque_noturno(self):
         if self.dia:
-        		return
-		linhas = 1 + self.turno // 10 #dificuldade escala
+            return
+        linha = 1 + self.turno//10
 
-		for _ in range(lfor
+        for _ in range(linha):
         # remove a removee do topo
-        	self.mapa.pop(0)
-
-        # cria nova linha inimiga embaixo
-        	nova_linha = ['V' for _ in range(10)]
-        	self.mapa.append(nova_linha)
+            self.mapa.pop(0)
+        nova_linha = ['V' for _ in range(10)]
+        self.mapa.append(nova_linha)
         
     def faz_pedido_armazem(self, requisicoes):
             """
@@ -316,43 +313,6 @@ class Jogo:
             return 'G'
         else:
             return None
-
-    #def recursos(self, entrada):
-        """Retorna o recurso associado a uma cor ou a uma forma.
-
-        Entrada pode ser:
-        - tupla RGB (ex.: self.amarelo)
-        - nome da forma (ex.: 'forma_1')
-        Retorna uma string com o recurso ou None se não houver mapeamento.
-        """
-        # obter cor a partir do parâmetro
-      #  cor = None
-     #   if isinstance(entrada, str):
-            # se for nome de forma, pega a cor da forma
-           # if entrada in self.formas:
-           #     cor = self.formas[entrada]['cor']
-           # else:
-                # aceita também códigos únicos usados em mapa (ex: 'Y', 'R')
-           #     try:
-                    # converte código para cor usando recb_cor se possível
-                 #   cor = self.recb_cor(entrada)
-             #   except Exception:
-           #         cor = None
-       # else:
-            # assume que é uma tupla RGB
-          #  cor = entrada
-
-       """mapping = {
-            self.amarelo: 'pedra',
-            self.roxo: 'madeira',
-            self.azul_c: 'pano',
-            self.vermelho: 'ferro',
-            self.verde: 'cobre',
-            self.azul: 'comida',
-            self.laranja: 'barro'
-        }
-
-        return mapping.get(cor)"""
     
     def atualiza_transportador(self, fonte_pos, slot_pos):
         if self.transportador_estado == 'idle':
@@ -839,13 +799,6 @@ class Jogo:
             self.limpar_janela()
             self.tabuleiro()
             pygame.display.update()
-                # Exibe se é dia ou noite
-            try:
-                txt_turno = f"Turno: {self.turno} - {'Dia' if self.dia else 'Noite'}"
-                txt_t = self.font.render(txt_turno, True, self.branco)
-                self.janela.blit(txt_t, (hold_x, hold_y - txt_t.get_height() - 30))
-            except Exception:
-                pass
         
     def game_over(self): #verifica se o jogo acabou
         posicao_forma_x = self.posicao_forma[0] #posição x da forma em jogo
@@ -920,7 +873,7 @@ while True:
     if pygame.key.get_pressed()[pygame.K_DOWN] and tetris.tempo % sensibilidade == 0:
         tetris.movimento('down')
     #if pygame.key.get_pressed()[pygame.K_SPACE] and tetris.tempo % sensibilidade == 0:
-        #tetris.movimento('space')
+        #tetris.movimento('space') 
                   
     tetris.Taxa_de_frames.tick(60)
     tetris.limpar_janela()
