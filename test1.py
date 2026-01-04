@@ -127,9 +127,10 @@ class Jogo:
         # Agora que inventario existe, pode gerar pedidos
         self.pedidos_ativos = [self.gerar_pedido_aleatorio() for _ in range(1)]
 
-    def calcula_largura_janela(self, tam_cel):
-    	multiplicador_total = 22
-    	return tam_cel * multiplicador_total
+	def calcula_largura_janela(self,tam_cel):
+	       multiplicador_total=22
+	       return tam_cel*multiplicador_total
+	       
         
     def passar_turno(self):
         self.turno += 1
@@ -141,13 +142,13 @@ class Jogo:
                 self.inimigos.clear()
     
     def ataque_noturno(self):
-        	if self.dia:
+        if self.dia:
         		return
-			linhas = 1 + self.turno // 10 #dificuldade escala
+		linhas = 1 + self.turno // 10 #dificuldade escala
 
-			for _ in range(linhas):
-        # remove a linha do topo
-        		self.mapa.pop(0)
+		for _ in range(lfor
+        # remove a removee do topo
+        	self.mapa.pop(0)
 
         # cria nova linha inimiga embaixo
         	nova_linha = ['V' for _ in range(10)]
