@@ -15,16 +15,6 @@ class Jogo:
         self.Taxa_de_frames = pygame.time.Clock() # variavel dos ticks do jogo
         self.tempo = 0 # tempo do jogo
         self.font = pygame.font.Font(None, 36) # fonte para o texto
-        self.recurso_slot_max = 5
-        self.item_slot = None
-        self.fila_fonte = []  # filas de fontes para o transportador
-
-        #bloco movel
-        self.transportador_pos = None 
-        self.transportador_item = None 
-        self.transportador_estado = 'idle' 
-        self.transportador_vel = 1 # velocidade do transportador
-
         #cores do jogo
         self.branco = (255,255,255) # cor branca
         self.preta = (0,0,0)        # cor preta
@@ -110,27 +100,15 @@ class Jogo:
         self.nova_forma = True # quando uma nova forma aparecera
         self.forma_reserva = None #reserva (hold) de peça: None significa sem reserva
         self.hold_usado = False # impede varias peças reservas na mesma rodada
-        # inventário de recursos agora armazena códigos de cor das peças
         self.turno = 0
         self.dia = True
         self.inimigos = []  # lista de inimigos (blocos vermelhos)
-        self.inventario = {
-            'Y': 0,  # amarelo
-            'R': 0,  # roxo
-            'C': 0,  # azul claro
-            'V': 0,  # vermelho
-            'G': 0,  # verde
-            'A': 0,  # azul
-            'L': 0   # laranja
-        }
 
-        # Agora que inventario existe, pode gerar pedidos
-        self.pedidos_ativos = [self.gerar_pedido_aleatorio() for _ in range(1)]
-
-    def calcula_largura_janela(self, tam_cel):
-        multiplicador_total = 22
-        return tam_cel * multiplicador_total
-
+	def calcula_largura_janela(self,tam_cel):
+	       multiplicador_total=22
+	       return tam_cel*multiplicador_total
+	       
+        
     def passar_turno(self):
         self.turno += 1
         if self.turno % 10 == 0: # a cada 5 turnos
@@ -142,14 +120,16 @@ class Jogo:
     
     def ataque_noturno(self):
         if self.dia:
-            return
-        linha = 1 + self.turno//10
+        		return
+		linhas = 1 + self.turno // 10 #dificuldade escala
 
-        for _ in range(linha):
+		for _ in range(lfor
         # remove a removee do topo
-            self.mapa.pop(0)
-        nova_linha = ['V' for _ in range(10)]
-        self.mapa.append(nova_linha)
+        	self.mapa.pop(0)
+
+        # cria nova linha inimiga embaixo
+        	nova_linha = ['V' for _ in range(10)]
+        	self.mapa.append(nova_linha)
         
     def faz_pedido_armazem(self, requisicoes):
             """
@@ -203,35 +183,6 @@ class Jogo:
     def limpar_janela(self): #limpa a janela
         pygame.draw.rect(self.janela, self.preta, (0, 0, self.janela.get_width(), self.janela.get_height()))
         
-    def gerar_pedido_aleatorio(self, tamanho=None):
-            """
-            Gera um pedido aleatório de materiais (lista de códigos de cor).
-            """
-            opcoes = list(self.inventario.keys())
-            if tamanho is None:
-                tamanho = random.randint(2, 4)
-            return [random.choice(opcoes) for _ in range(tamanho)]
-
-    def processar_pedidos(self):
-            """
-            Tenta atender os pedidos ativos, removendo-os se forem completados.
-            Sempre que um pedido for atendido, gera um novo pedido automaticamente.
-            """
-            pedidos_restantes = []
-            pedidos_atendidos = 0
-            for pedido in self.pedidos_ativos:
-                if self.faz_pedido_armazem(pedido):
-                    pedidos_atendidos += 1
-                else:
-                    pedidos_restantes.append(pedido)
-            self.pedidos_ativos = pedidos_restantes
-            # Gera um novo pedido para cada pedido atendido
-            for _ in range(pedidos_atendidos):
-                self.pedidos_ativos.append(self.gerar_pedido_aleatorio())
-                
-    def forma_aleatoria(self): #randomiza as formas do jogo
-        return "forma_" + str(random.randint(1,7)) #formata o resultado e usa o biblioteca 'random' para sortiar um numero de 1 a 7
-
     def inic_forma_aleatoria(self): # adiciona a forma aletoria na lista 'proximas_forma'
         for i in range(4): #percorre a lista
             self.proximas_forma[i] = self.forma_aleatoria() #adiciona as formas na lista
@@ -313,7 +264,7 @@ class Jogo:
             return 'G'
         else:
             return None
-    
+
     def atualiza_transportador(self, fonte_pos, slot_pos):
         if self.transportador_estado == 'idle':
             self.transportador_estado ='indo_pegar'
@@ -360,49 +311,6 @@ class Jogo:
             if abs(self.transportador_pos[i] - destino[i]) < self.transportador_vel:
                 self.transportador_pos[i] = destino[i]
 
-    def desenha_transportador(self):
-        if not self.transportador_pos:
-            return
-
-        cor = (180, 180, 255)
-        if self.transportador_item:
-            cor = self.transportador_item if isinstance(self.transportador_item, tuple) else {
-                'pedra': self.amarelo,
-                'madeira': self.roxo,
-                'pano': self.azul_c,
-                'ferro': self.vermelho,
-                'cobre': self.verde,
-                'comida': self.azul,
-                'barro': self.laranja
-            }.get(self.transportador_item, (180, 180, 255))
-
-        pygame.draw.rect(self.janela, cor,(*self.transportador_pos, self.tam_celulas, self.tam_celulas))
-        pygame.draw.rect(self.janela,self.branco,(*self.transportador_pos, self.tam_celulas, self.tam_celulas),2)
-
-
-
-    
-    def verificar_slot_por_inventario(self):
-        if self.transportador_estado != 'idle':
-            return 
-        for recurso, quantidade in self.inventario.items():
-            if quantidade >= self.recurso_slot_max:
-                self.inventario[recurso] -= self.recurso_slot_max
-
-                # converte recurso em COR
-                cor_recurso = {
-                    'pedra': self.amarelo,
-                    'madeira': self.roxo,
-                    'pano': self.azul_c,
-                    'ferro': self.vermelho,
-                    'cobre': self.verde,
-                    'comida': self.azul,
-                    'barro': self.laranja
-                    }[recurso]
-
-                self.fila_fonte.append(cor_recurso)
-                break
-    
     def tabuleiro(self):# desenha o tabuleiro do jogo
         tabuleiro_L = self.tam_celulas * 10 # largura do tabuleiro
         tabuleiro_A = self.tam_celulas * 20 # altura do tabuleiro
@@ -467,7 +375,6 @@ class Jogo:
 
         # atualiza e desenha transportador
         self.atualiza_transportador(fonte_pos, destino_pos)
-        self.desenha_transportador()
 
         for y in range(20): # percorre todas as linhas do tabuleiro
             for x in range(10): # percorre todas as coluna no tabuleiro
@@ -572,73 +479,6 @@ class Jogo:
                         py = hold_y + self.tam_celulas * (ry + offset_y)
                         pygame.draw.rect(self.janela, cor_res, (px, py, self.tam_celulas, self.tam_celulas))
                         pygame.draw.rect(self.janela, cor_borda_res, (px, py, self.tam_celulas, self.tam_celulas), 1)
-
-        # Esquerda: itens no receptor (fila_fonte), Direita: itens no armazém (inventário)
-        try:
-            margem = 8
-            tam_bloco = self.tam_celulas
-            # Centraliza o receptor em relação ao hold e desce 30 pixels
-            caixa_larg = tam_bloco * 2 + margem * 3
-            inv_x = hold_x + (hold_w - caixa_larg) // 2
-            inv_y = hold_y + hold_h + 40
-            # Centralizar armazém com pedidos e descer 50 pixels
-            tabuleiro_L = self.tam_celulas * 10
-            # Posição da caixa de pedidos
-            pedidos_x = x_tabuleiro + tabuleiro_L + 60
-            pedidos_y = y_tabuleiro + 40
-            largura_caixa_pedidos = self.tam_celulas * 5
-            deslocamento_pedidos = 20
-            # Centraliza armazém com a caixa de pedidos
-            req_x = pedidos_x - 10 + deslocamento_pedidos + (largura_caixa_pedidos - caixa_larg) // 2
-            req_y = pedidos_y + 140
-            # Dimensões das caixas
-            caixa_alt = tam_bloco * 4 + margem * 5
-            # Caixa do receptor
-            pygame.draw.rect(self.janela, (40, 40, 40), (inv_x - margem, inv_y - margem, caixa_larg, caixa_alt))
-            pygame.draw.rect(self.janela, self.branco, (inv_x - margem, inv_y - margem, caixa_larg, caixa_alt), 2)
-            label_rec = self.font.render('Receptor', True, self.branco)
-            self.janela.blit(label_rec, (inv_x - margem + (caixa_larg - label_rec.get_width()) // 2, inv_y - margem - label_rec.get_height() - 2))
-            # Caixa do armazém
-            pygame.draw.rect(self.janela, (40, 40, 40), (req_x - margem, req_y - margem, caixa_larg, caixa_alt))
-            pygame.draw.rect(self.janela, self.branco, (req_x - margem, req_y - margem, caixa_larg, caixa_alt), 2)
-            label_arm = self.font.render('Armazém', True, self.branco)
-            self.janela.blit(label_arm, (req_x - margem + (caixa_larg - label_arm.get_width()) // 2, req_y - margem - label_arm.get_height() - 2))
-
-            # Contagem dos itens no receptor (fila_fonte)
-            fila_contagem = {k: 0 for k in self.inventario.keys()}
-            for item in self.fila_fonte:
-                cod = None
-                if isinstance(item, tuple):
-                    cod = self.recb_codigo_cod(item)
-                elif isinstance(item, str):
-                    cod = item
-                if cod and cod in fila_contagem:
-                    fila_contagem[cod] += 1
-            # Exibir itens 2 em 2 (duas colunas)
-            for idx, cod_cor in enumerate(self.inventario):
-                cor = self.recb_cor(cod_cor)
-                col = idx % 2
-                row = idx // 2
-                # Receptor (esquerda)
-                x_bloco = inv_x + col * (tam_bloco + margem)
-                y_bloco = inv_y + row * (tam_bloco + margem)
-                pygame.draw.rect(self.janela, cor, (x_bloco, y_bloco, tam_bloco, tam_bloco))
-                pygame.draw.rect(self.janela, self.branco, (x_bloco, y_bloco, tam_bloco, tam_bloco), 2)
-                txt_valor = self.font.render(str(fila_contagem[cod_cor]), True, self.preta)
-                txt_cx = x_bloco + (tam_bloco - txt_valor.get_width()) // 2
-                txt_cy = y_bloco + (tam_bloco - txt_valor.get_height()) // 2
-                self.janela.blit(txt_valor, (txt_cx, txt_cy))
-                # Armazém (direita)
-                x_req = req_x + col * (tam_bloco + margem)
-                y_req = req_y + row * (tam_bloco + margem)
-                pygame.draw.rect(self.janela, cor, (x_req, y_req, tam_bloco, tam_bloco))
-                pygame.draw.rect(self.janela, self.branco, (x_req, y_req, tam_bloco, tam_bloco), 2)
-                txt_cod = self.font.render(str(self.inventario[cod_cor]), True, self.preta)
-                txt_cod_x = x_req + (tam_bloco - txt_cod.get_width()) // 2
-                txt_cod_y = y_req + (tam_bloco - txt_cod.get_height()) // 2
-                self.janela.blit(txt_cod, (txt_cod_x, txt_cod_y))
-        except Exception:
-            pass
 
     def rotacao_direita(self): #gira a peça para direita
         girar = list(zip(*self.layout_forma)) # pega a linha do layout e junta os numeros das linhas em uma lista
@@ -776,29 +616,19 @@ class Jogo:
         y = 19 # começa da última linha do tabuleiro
         while y >= 0: # percorre as linhas do tabuleiro de baixo para cima
             if all(self.mapa[y][x] != '' for x in range(10)):
-                # coletar recursos da linha antes de removê-la
-                for x in range(10):
-                    codigo = self.mapa[y][x]
-                    recurso = self.recursos(codigo)
-                    if recurso:
-                        if recurso in self.inventario:
-                            self.inventario[recurso] += 1
-                        else:
-                            self.inventario[recurso] = 1
-                self.verificar_slot_por_inventario()
-                del self.mapa[y]
-                self.mapa.insert(0, [''] * 10)
-                remover += 1
-                # derrotar inimigos ao completar linha
-                self.derrotar_inimigos()
-            else:
-                y -= 1
 
         if remover > 0:
             self.adicionar_pontos(remover)
             self.limpar_janela()
             self.tabuleiro()
             pygame.display.update()
+                # Exibe se é dia ou noite
+            try:
+                txt_turno = f"Turno: {self.turno} - {'Dia' if self.dia else 'Noite'}"
+                txt_t = self.font.render(txt_turno, True, self.branco)
+                self.janela.blit(txt_t, (hold_x, hold_y - txt_t.get_height() - 30))
+            except Exception:
+                pass
         
     def game_over(self): #verifica se o jogo acabou
         posicao_forma_x = self.posicao_forma[0] #posição x da forma em jogo
@@ -831,7 +661,6 @@ class Jogo:
             self.forma_reserva = None
             self.hold_usado = False
             self.nova_forma = True # uma nova forma aparecera
-            self.pedidos_ativos = [self.gerar_pedido_aleatorio() for _ in range(3)] # gera 3 pedidos novos
             self.add_forma_jogo() # adiciona a peça em jogo
     
     def butao_restart(self):
@@ -873,7 +702,7 @@ while True:
     if pygame.key.get_pressed()[pygame.K_DOWN] and tetris.tempo % sensibilidade == 0:
         tetris.movimento('down')
     #if pygame.key.get_pressed()[pygame.K_SPACE] and tetris.tempo % sensibilidade == 0:
-        #tetris.movimento('space') 
+        #tetris.movimento('space')
                   
     tetris.Taxa_de_frames.tick(60)
     tetris.limpar_janela()
@@ -888,3 +717,4 @@ while True:
     tetris.ataque_noturno()
     tetris.butao_restart()
     pygame.display.update()
+
